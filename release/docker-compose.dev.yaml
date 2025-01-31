@@ -1,0 +1,142 @@
+services:
+  restaurant-postgres:
+    image: 'postgres:16.1-alpine3.18'
+    restart: always
+    environment:
+      POSTGRES_PASSWORD: "test123"
+    volumes:
+      - ./restaurant-postgres-data:/var/lib/postgresql/data
+    ports:
+      - 5435:5432
+  customer-postgres:
+    image: 'postgres:16.1-alpine3.18'
+    restart: always
+    environment:
+      POSTGRES_PASSWORD: "test123"
+    volumes:
+      - ./customer-postgres-data:/var/lib/postgresql/data
+    ports:
+      - 5436:5432
+  authentication-postgres:
+    image: 'postgres:16.1-alpine3.18'
+    restart: always
+    environment:
+      POSTGRES_PASSWORD: "test123"
+    volumes:
+      - ./authentication-postgres-data:/var/lib/postgresql/data
+    ports:
+      - 5437:5432
+  transaction-postgres:
+    image: 'postgres:16.1-alpine3.18'
+    restart: always
+    environment:
+      POSTGRES_PASSWORD: "test123"
+    volumes:
+      - ./transaction-postgres-data:/var/lib/postgresql/data
+    ports:
+      - 5438:5432
+  activemq:
+    image: 'apache/activemq-artemis:2.33.0-alpine'
+    restart: always
+    ports:
+      - 8161:8161
+  kafka:
+    image: 'apache/kafka:latest'
+    restart: always
+  restaurant:
+    image: restaurant-service
+    restart: always
+    hostname: restaurant
+    build:
+      dockerfile: Dockerfile
+      context: ../restaurant
+    environment:
+      - POSTGRES_HOST=restaurant-postgres
+      - POSTGRES_PORT=5432
+      - POSTGRES_DATABASE=postgres
+      - POSTGRES_USERNAME=postgres
+      - POSTGRES_PASSWORD=test123
+      - APPLICATION_PORT=8080
+      - ACTIVEMQ_HOST=activemq
+      - ACTIVEMQ_PORT=61616
+      - ACTIVEMQ_USERNAME=artemis
+      - ACTIVEMQ_PASSWORD=artemis
+    deploy:
+      replicas: 1
+    depends_on:
+      - restaurant-postgres
+    volumes:
+      - ./logs/restaurant/:/var/log/restaurant
+  customer:
+    image: customer-service
+    restart: always
+    hostname: customer
+    build:
+      dockerfile: Dockerfile
+      context: ../customer
+    environment:
+      - POSTGRES_HOST=customer-postgres
+      - POSTGRES_PORT=5432
+      - POSTGRES_DATABASE=postgres
+      - POSTGRES_USERNAME=postgres
+      - POSTGRES_PASSWORD=test123
+      - APPLICATION_PORT=8080
+      - ACTIVEMQ_HOST=activemq
+      - ACTIVEMQ_PORT=61616
+      - ACTIVEMQ_USERNAME=artemis
+      - ACTIVEMQ_PASSWORD=artemis
+    deploy:
+      replicas: 1
+    depends_on:
+      - customer-postgres
+    volumes:
+      - ./logs/customer/:/var/log/customer
+  authentication:
+    image: authentication-service
+    restart: always
+    hostname: authentication
+    build:
+      dockerfile: Dockerfile
+      context: ../authentication
+    environment:
+      - POSTGRES_HOST=authentication-postgres
+      - POSTGRES_PORT=5432
+      - POSTGRES_DATABASE=postgres
+      - POSTGRES_USERNAME=postgres
+      - POSTGRES_PASSWORD=test123
+      - APPLICATION_PORT=8080
+      - ACTIVEMQ_HOST=activemq
+      - ACTIVEMQ_PORT=61616
+      - ACTIVEMQ_USERNAME=artemis
+      - ACTIVEMQ_PASSWORD=artemis
+    deploy:
+      replicas: 1
+    depends_on:
+      - authentication-postgres
+    volumes:
+      - ./logs/authentication/:/var/log/authentication
+  transaction:
+    image: transaction-service
+    restart: always
+    hostname: transaction
+    build:
+      dockerfile: Dockerfile
+      context: ../transaction
+    environment:
+      - POSTGRES_HOST=transaction-postgres
+      - POSTGRES_PORT=5432
+      - POSTGRES_DATABASE=postgres
+      - POSTGRES_USERNAME=postgres
+      - POSTGRES_PASSWORD=test123
+      - APPLICATION_PORT=8080
+      - ACTIVEMQ_HOST=activemq
+      - ACTIVEMQ_PORT=61616
+      - ACTIVEMQ_USERNAME=artemis
+      - ACTIVEMQ_PASSWORD=artemis
+    deploy:
+      replicas: 1
+    depends_on:
+      - transaction-postgres
+    volumes:
+      - ./logs/transaction/:/var/log/transaction
+      
