@@ -11,7 +11,7 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-public class User extends BaseEntity<Long> {
+public class UserEntity extends BaseEntity<Long> {
     protected String username;
     protected String password;
 }
