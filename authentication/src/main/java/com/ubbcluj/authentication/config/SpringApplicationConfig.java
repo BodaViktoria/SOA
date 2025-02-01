@@ -18,7 +18,7 @@ import java.util.List;
 })
 @EnableTransactionManagement
 @EnableJpaRepositories(basePackages = "com.ubbcluj.authentication")
-@EntityScan(basePackages = "com.example.entity")
+@EntityScan(basePackages = "com.ubbcluj.authentication")
 public class SpringApplicationConfig {
 
     @Bean
