@@ -9,6 +9,10 @@ import java.util.List;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class ItemIdsDto {
+public class OrderRequestJMSDto {
+    protected Long orderId;
+    protected Long restaurantId;
+    protected Long customerId;
     protected List<Long> itemIds;
+    protected Long finalPrice;
 }

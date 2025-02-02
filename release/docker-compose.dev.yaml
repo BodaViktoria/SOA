@@ -97,6 +97,9 @@ services:
       - ACTIVEMQ_PASSWORD=artemis
       - AUTH_URL=auth-service
       - AUTH_PORT=8080
+      - RESTAURANT_URL=restaurant
+      - RESTAURANT_PORT=8080
+      - LAMBDA_URL=https://knizanhfhvi4f2soacs7w7qoqq0fcljc.lambda-url.eu-north-1.on.aws/
     deploy:
       replicas: 1
     depends_on:

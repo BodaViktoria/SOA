@@ -27,3 +27,6 @@ logging:
     path: /var/log/customer
 authenticationServiceURL: ${AUTH_URL}
 authenticationServicePort: ${AUTH_PORT}
+restaurantServiceURL: ${RESTAURANT_URL}
+restaurantServicePort: ${RESTAURANT_PORT}
+lambdaURL: ${LAMBDA_URL}

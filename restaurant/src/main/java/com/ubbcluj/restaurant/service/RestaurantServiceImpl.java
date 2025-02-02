@@ -62,7 +62,7 @@ public class RestaurantServiceImpl implements RestaurantService{
         }
         Item item = new Item(dto.getName(), dto.getDescription(), dto.getPrice(), restaurant.get());
         var savedItem = itemRepository.save(item);
-        return new ItemDto(savedItem.getId(), savedItem.getName(), savedItem.getDescription(), savedItem.getPrice());
+        return new ItemDto(savedItem.getId(), savedItem.getName(), savedItem.getDescription(), savedItem.getPrice(), savedItem.getRestaurant().getId());
     }
     @Override
     public List<RestaurantDto> getAllRestaurants() {
@@ -74,7 +74,7 @@ public class RestaurantServiceImpl implements RestaurantService{
     @Override
     public List<ItemDto> getItemsForRestaurant(Long restaurantId) {
         return itemRepository.findByRestaurantId(restaurantId).stream()
-                .map(item -> new ItemDto(item.getId(), item.getName(), item.getDescription(), item.getPrice()))
+                .map(item -> new ItemDto(item.getId(), item.getName(), item.getDescription(), item.getPrice(), restaurantId))
                 .collect(Collectors.toList());
     }
 
@@ -99,7 +99,7 @@ public class RestaurantServiceImpl implements RestaurantService{
         item.setDescription(dto.getDescription());
         item.setPrice(dto.getPrice());
         var updatedItem = itemRepository.save(item);
-        return new ItemDto(updatedItem.getId(), updatedItem.getName(), updatedItem.getDescription(), updatedItem.getPrice());
+        return new ItemDto(updatedItem.getId(), updatedItem.getName(), updatedItem.getDescription(), updatedItem.getPrice(), updatedItem.getRestaurant().getId());
     }
 
     @Override
@@ -107,7 +107,7 @@ public class RestaurantServiceImpl implements RestaurantService{
         List<Item> items = itemRepository.findByIdIn(dto.getItemIds());
         List<ItemDto> itemDtos = new ArrayList<>();
         for(Item item : items){
-            itemDtos.add(new ItemDto(item.getId(), item.getName(), item.getDescription(), item.getPrice()));
+            itemDtos.add(new ItemDto(item.getId(), item.getName(), item.getDescription(), item.getPrice(), item.getRestaurant().getId()));
         }
         return itemDtos;
     }

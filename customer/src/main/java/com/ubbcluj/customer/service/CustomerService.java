@@ -7,5 +7,5 @@ import com.ubbcluj.customer.dto.OrderDto;
 
 public interface CustomerService {
     CustomerDto register(CustomerCreateDto dto);
-    OrderDto order(CreateOrderDto dto);
+    OrderDto order(CreateOrderDto dto, Long requester);
 }

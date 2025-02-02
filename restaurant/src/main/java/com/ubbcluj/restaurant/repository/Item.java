@@ -1,24 +1,23 @@
 package com.ubbcluj.restaurant.repository;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-
-import java.util.Set;
+import lombok.*;
 
 @Entity
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@RequiredArgsConstructor
 public class Item extends BaseEntity<Long>{
     @Column(nullable = false)
+    @NonNull
     protected String name;
     @Column
+    @NonNull
     protected String description;
     @Column(nullable = false)
+    @NonNull
     protected Long price;
     @ManyToOne(cascade = {
             CascadeType.DETACH,

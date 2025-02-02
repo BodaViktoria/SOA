@@ -7,8 +7,8 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class CustomerDto {
-    protected Long id;
-    protected String name;
-    protected Integer rating;
+public class DiscountResponseDto {
+    protected Long original_price;
+    protected Long discount;
+    protected Long final_price;
 }

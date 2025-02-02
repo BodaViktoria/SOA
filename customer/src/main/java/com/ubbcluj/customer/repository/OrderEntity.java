@@ -17,4 +17,7 @@ public class OrderEntity extends BaseEntity<Long>{
 
     @ManyToOne
     protected Customer customer;
+
+    @Column(nullable = false)
+    protected Long finalPrice;
 }

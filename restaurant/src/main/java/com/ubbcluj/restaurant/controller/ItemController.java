@@ -40,7 +40,7 @@ public class ItemController {
         return ResponseEntity.ok().body(restaurantService.updateItem(itemId, dto));
     }
 
-    @GetMapping("/itemList")
+    @PostMapping("/itemList")
     public ResponseEntity<List<ItemDto>> getAllItemsByIds(@RequestBody ItemIdsDto dto){
         return ResponseEntity.ok().body(restaurantService.getAllItemsByIds(dto));
     }

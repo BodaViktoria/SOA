@@ -23,7 +23,7 @@ public class CustomerController {
     }
 
     @PostMapping("/order")
-    ResponseEntity<OrderDto> order(@RequestBody CreateOrderDto dto){
-        return ResponseEntity.ok().body(customerService.order(dto));
+    ResponseEntity<OrderDto> order(@RequestBody CreateOrderDto dto, @RequestHeader("userId") Long requester){
+        return ResponseEntity.ok().body(customerService.order(dto, requester));
     }
 }

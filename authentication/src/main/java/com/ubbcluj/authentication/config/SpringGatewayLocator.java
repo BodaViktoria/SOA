@@ -76,12 +76,21 @@ public class SpringGatewayLocator {
                                         .uri(customerServiceUrl))
                 .route(
                         p ->
-                                p.method(HttpMethod.GET)
+                                p.method(HttpMethod.POST)
                                         .and()
                                         .path(
                                                 "/restaurant/api/item/itemList"
                                         )
                                         .uri(restaurantServiceUrl))
+                .route(
+                        p ->
+                                p.method(HttpMethod.POST)
+                                        .and()
+                                        .path(
+                                                "/customer/api/order"
+                                        )
+                                        .filters(f -> f.filter(authorizationFilter))
+                                        .uri(customerServiceUrl))
                 .build();
     }
 }

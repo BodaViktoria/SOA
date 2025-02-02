@@ -1,26 +1,32 @@
 package com.ubbcluj.customer.service;
 
-import com.ubbcluj.customer.dto.CreateOrderDto;
-import com.ubbcluj.customer.dto.CustomerCreateDto;
-import com.ubbcluj.customer.dto.CustomerDto;
-import com.ubbcluj.customer.dto.OrderDto;
-import com.ubbcluj.customer.repository.Customer;
-import com.ubbcluj.customer.repository.CustomerRepository;
-import com.ubbcluj.customer.repository.RegisterDto;
-import com.ubbcluj.customer.repository.UserDto;
+import com.ubbcluj.customer.dto.*;
+import com.ubbcluj.customer.repository.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.*;
+import org.springframework.jms.core.JmsTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
+import java.util.List;
 import java.util.Random;
+import java.util.stream.Collectors;
 
 @Service
 public class CustomerServiceImpl implements CustomerService{
 
     protected final CustomerRepository customerRepository;
 
+    protected final OrderRepository orderRepository;
+
     private final RestTemplate restTemplate;
+
+    protected final JmsTemplate jmsTemplate;
+
+    private String orderQueue = "queue/orders";
 
     @Value("${authenticationServiceURL}")
     private String authUrl;
@@ -28,8 +34,20 @@ public class CustomerServiceImpl implements CustomerService{
     @Value("${authenticationServicePort}")
     private String authPort;
 
-    public CustomerServiceImpl(CustomerRepository customerRepository) {
+    @Value("${restaurantServiceURL}")
+    private String restaurantUrl;
+
+    @Value("${restaurantServicePort}")
+    private String restaurantPort;
+
+    @Value("${lambdaURL}")
+    private String lambdaUrl;
+    private final Logger logger = LoggerFactory.getLogger(CustomerServiceImpl.class);
+
+    public CustomerServiceImpl(CustomerRepository customerRepository, OrderRepository orderRepository, JmsTemplate jmsTemplate) {
         this.customerRepository = customerRepository;
+        this.orderRepository = orderRepository;
+        this.jmsTemplate = jmsTemplate;
         restTemplate = new RestTemplate();
     }
 
@@ -55,8 +73,51 @@ public class CustomerServiceImpl implements CustomerService{
     }
 
     @Override
-    public OrderDto order(CreateOrderDto dto) {
-        return null;
+    public OrderDto order(CreateOrderDto dto, Long requester) {
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+
+        var requestBody = new ItemIdsDto(dto.getItemIds());
+
+        // Wrap request body and headers in HttpEntity
+        HttpEntity<Object> entity = new HttpEntity<>(requestBody, headers);
+
+        // Send POST request
+        ResponseEntity<List<ItemDto>> response = restTemplate.exchange(getRestaurantBase() + "/restaurant/api/item/itemList", HttpMethod.POST, entity, new ParameterizedTypeReference<List<ItemDto>>() {});
+
+        // Return the response body as a String
+        List<ItemDto> itemDtos = response.getBody();
+        if(itemDtos.isEmpty()){
+            throw new RuntimeException("No items!");
+        }
+        var customer = customerRepository.findByAssociatedUserId(requester);
+        logger.info("----------------------------->>>>>Requester: " + requester);
+
+        if(customer.isEmpty()){
+            throw new RuntimeException("Customer does not exist!");
+        }
+        Integer customerRating = customer.get().getRating();
+
+        DiscountRequestDto discountRequestDto = new DiscountRequestDto(itemDtos.stream().map(i->i.getPrice()).toList(), customerRating);
+
+        // Wrap request body and headers in HttpEntity
+        HttpEntity<Object> entityLambda = new HttpEntity<>(discountRequestDto, headers);
+
+        // Send POST request
+        ResponseEntity<DiscountResponseDto> responseLambda = restTemplate.exchange(lambdaUrl, HttpMethod.POST, entityLambda, DiscountResponseDto.class);
+
+        // Return the response body as a String
+        DiscountResponseDto discountResponse = responseLambda.getBody();
+        OrderEntity finalOrderDto = new OrderEntity(itemDtos.stream().map(i->i.getId().toString()).collect(Collectors.joining(",")), customer.get(), discountResponse.getFinal_price());
+        var savedOrder = orderRepository.save(finalOrderDto);
+
+
+        OrderRequestJMSDto orderRequestJMSDto = new OrderRequestJMSDto(savedOrder.getId(), itemDtos.get(0).getRestaurantId(),
+                requester, itemDtos.stream().map(i->i.getId()).toList(), discountResponse.getFinal_price());
+
+        jmsTemplate.convertAndSend(orderQueue, orderRequestJMSDto);
+
+        return new OrderDto(savedOrder.getId());
     }
 
     public int getRandomNumber() {
@@ -66,5 +127,9 @@ public class CustomerServiceImpl implements CustomerService{
 
     private String getAuthBase(){
         return "http://" + authUrl + ":" + authPort;
+    }
+
+    private String getRestaurantBase(){
+        return "http://" + restaurantUrl + ":" + restaurantPort;
     }
 }
