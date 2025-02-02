@@ -45,13 +45,42 @@ services:
     restart: always
     ports:
       - 8161:8161
+  zookeeper:
+    image: confluentinc/cp-zookeeper:5.1.0
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
+    ports:
+      - "22181:2181"
+
   kafka:
-    image: 'apache/kafka:latest'
-    container_name: kafka
-    restart: always
+    image: confluentinc/cp-kafka:5.1.0
+    depends_on:
+      - zookeeper
+    ports:
+      - "29092:29092"
+      - "9092:9092"
+    environment:
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_ZOOKEEPER_SESSION_TIMEOUT_MS: 30000
+      KAFKA_ZOOKEEPER_CONNECTION_TIMEOUT_MS: 30000
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092,PLAINTEXT_HOST://localhost:29092
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
+      KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_LOG4J_LOGGERS: "kafka.controller=INFO,kafka.request.logger=WARN"
+      KAFKA_LOG4J_ROOT_LOGLEVEL: WARN
+      KAFKA_CREATE_TOPICS: "transaction:1:1"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    hostname: kafka
+    restart: unless-stopped
+    healthcheck:
+      test: [ "CMD-SHELL", "nc -z localhost 9092 || exit 1" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
   restaurant:
     image: restaurant-service
-    container_name: restaurant-service
     restart: always
     hostname: restaurant
     build:
@@ -71,14 +100,13 @@ services:
       - AUTH_URL=auth-service
       - AUTH_PORT=8080
     deploy:
-      replicas: 1
+      replicas: 3
     depends_on:
       - restaurant-postgres
     volumes:
       - ./logs/restaurant/:/var/log/restaurant
   customer:
     image: customer-service
-    container_name: customer-service
     restart: always
     hostname: customer
     build:
@@ -100,10 +128,13 @@ services:
       - RESTAURANT_URL=restaurant
       - RESTAURANT_PORT=8080
       - LAMBDA_URL=https://knizanhfhvi4f2soacs7w7qoqq0fcljc.lambda-url.eu-north-1.on.aws/
+      - KAFKA_URL=kafka
+      - KAFKA_PORT=9092
     deploy:
-      replicas: 1
+      replicas: 3
     depends_on:
       - customer-postgres
+      - kafka
     volumes:
       - ./logs/customer/:/var/log/customer
   auth-service:
@@ -136,7 +167,6 @@ services:
       - 8030:8080
   transaction:
     image: transaction-service
-    container_name: transaction-service
     restart: always
     hostname: transaction
     build:
@@ -149,14 +179,14 @@ services:
       - POSTGRES_USERNAME=postgres
       - POSTGRES_PASSWORD=test123
       - APPLICATION_PORT=8080
-      - ACTIVEMQ_HOST=activemq
-      - ACTIVEMQ_PORT=61616
-      - ACTIVEMQ_USERNAME=artemis
-      - ACTIVEMQ_PASSWORD=artemis
+      - KAFKA_URL=kafka
+      - KAFKA_PORT=9092
     deploy:
-      replicas: 1
+      replicas: 3
     depends_on:
       - transaction-postgres
+      - kafka
+      - zookeeper
     volumes:
       - ./logs/transaction/:/var/log/transaction
       

@@ -1,5 +1,7 @@
 package com.ubbcluj.customer.service;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ubbcluj.customer.dto.*;
 import com.ubbcluj.customer.repository.*;
 import org.slf4j.Logger;
@@ -8,6 +10,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.*;
 import org.springframework.jms.core.JmsTemplate;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
@@ -26,6 +29,8 @@ public class CustomerServiceImpl implements CustomerService{
 
     protected final JmsTemplate jmsTemplate;
 
+    private final KafkaTemplate<String, String> kafkaTemplate;
+
     private String orderQueue = "queue/orders";
 
     @Value("${authenticationServiceURL}")
@@ -42,12 +47,15 @@ public class CustomerServiceImpl implements CustomerService{
 
     @Value("${lambdaURL}")
     private String lambdaUrl;
+
+    private String kafkaTopic = "transaction";
     private final Logger logger = LoggerFactory.getLogger(CustomerServiceImpl.class);
 
-    public CustomerServiceImpl(CustomerRepository customerRepository, OrderRepository orderRepository, JmsTemplate jmsTemplate) {
+    public CustomerServiceImpl(CustomerRepository customerRepository, OrderRepository orderRepository, JmsTemplate jmsTemplate, KafkaTemplate<String, String> kafkaTemplate) {
         this.customerRepository = customerRepository;
         this.orderRepository = orderRepository;
         this.jmsTemplate = jmsTemplate;
+        this.kafkaTemplate = kafkaTemplate;
         restTemplate = new RestTemplate();
     }
 
@@ -116,6 +124,19 @@ public class CustomerServiceImpl implements CustomerService{
                 requester, itemDtos.stream().map(i->i.getId()).toList(), discountResponse.getFinal_price());
 
         jmsTemplate.convertAndSend(orderQueue, orderRequestJMSDto);
+
+        // kafka
+        TransactionDto transactionDto = new TransactionDto(customer.get().getAssociatedUserId(), discountResponse.getFinal_price());
+
+        ObjectMapper objectMapper = new ObjectMapper();
+
+        try{
+            String json = objectMapper.writeValueAsString(transactionDto);
+            kafkaTemplate.send(kafkaTopic, json);
+        }
+        catch (JsonProcessingException e){
+            logger.error(e.getMessage());
+        }
 
         return new OrderDto(savedOrder.getId());
     }

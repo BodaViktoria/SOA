@@ -18,6 +18,11 @@ spring:
     broker-url: tcp://${ACTIVEMQ_HOST}:${ACTIVEMQ_PORT}
     user: ${ACTIVEMQ_USERNAME}
     password: ${ACTIVEMQ_PASSWORD}
+  kafka:
+    bootstrap-servers: ${KAFKA_URL}:${KAFKA_PORT}
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.apache.kafka.common.serialization.StringSerializer
 server:
   port: ${APPLICATION_PORT:8080}
   servlet:
