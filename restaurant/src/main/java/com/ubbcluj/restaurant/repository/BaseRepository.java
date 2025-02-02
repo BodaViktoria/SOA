@@ -1,4 +1,4 @@
-package com.ubbcluj.authentication.repository;
+package com.ubbcluj.restaurant.repository;
 
 
 import org.springframework.data.jpa.repository.JpaRepository;

@@ -25,3 +25,5 @@ server:
 logging:
   file:
     path: /var/log/customer
+authenticationServiceURL: ${AUTH_URL}
+authenticationServicePort: ${AUTH_PORT}

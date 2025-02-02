@@ -1,6 +1,7 @@
 services:
   restaurant-postgres:
     image: 'postgres:16.1-alpine3.18'
+    container_name: restaurant-postgres
     restart: always
     environment:
       POSTGRES_PASSWORD: "test123"
@@ -10,6 +11,7 @@ services:
       - 5435:5432
   customer-postgres:
     image: 'postgres:16.1-alpine3.18'
+    container_name: customer-postgres
     restart: always
     environment:
       POSTGRES_PASSWORD: "test123"
@@ -19,6 +21,7 @@ services:
       - 5436:5432
   authentication-postgres:
     image: 'postgres:16.1-alpine3.18'
+    container_name: authentication-postgres
     restart: always
     environment:
       POSTGRES_PASSWORD: "test123"
@@ -28,6 +31,7 @@ services:
       - 5437:5432
   transaction-postgres:
     image: 'postgres:16.1-alpine3.18'
+    container_name: transaction-postgres
     restart: always
     environment:
       POSTGRES_PASSWORD: "test123"
@@ -37,14 +41,17 @@ services:
       - 5438:5432
   activemq:
     image: 'apache/activemq-artemis:2.33.0-alpine'
+    container_name: activemq
     restart: always
     ports:
       - 8161:8161
   kafka:
     image: 'apache/kafka:latest'
+    container_name: kafka
     restart: always
   restaurant:
     image: restaurant-service
+    container_name: restaurant-service
     restart: always
     hostname: restaurant
     build:
@@ -61,6 +68,8 @@ services:
       - ACTIVEMQ_PORT=61616
       - ACTIVEMQ_USERNAME=artemis
       - ACTIVEMQ_PASSWORD=artemis
+      - AUTH_URL=auth-service
+      - AUTH_PORT=8080
     deploy:
       replicas: 1
     depends_on:
@@ -69,6 +78,7 @@ services:
       - ./logs/restaurant/:/var/log/restaurant
   customer:
     image: customer-service
+    container_name: customer-service
     restart: always
     hostname: customer
     build:
@@ -85,14 +95,16 @@ services:
       - ACTIVEMQ_PORT=61616
       - ACTIVEMQ_USERNAME=artemis
       - ACTIVEMQ_PASSWORD=artemis
+      - AUTH_URL=auth-service
+      - AUTH_PORT=8080
     deploy:
       replicas: 1
     depends_on:
       - customer-postgres
     volumes:
       - ./logs/customer/:/var/log/customer
-  authentication:
-    image: authentication-service
+  auth-service:
+    image: auth-service
     restart: always
     hostname: authentication
     build:
@@ -109,14 +121,19 @@ services:
       - ACTIVEMQ_PORT=61616
       - ACTIVEMQ_USERNAME=artemis
       - ACTIVEMQ_PASSWORD=artemis
+      - RESTAURANT_URL=http://restaurant:8080
+      - CUSTOMER_URL=http://customer:8080
     deploy:
       replicas: 1
     depends_on:
       - authentication-postgres
     volumes:
       - ./logs/authentication/:/var/log/authentication
+    ports:
+      - 8030:8080
   transaction:
     image: transaction-service
+    container_name: transaction-service
     restart: always
     hostname: transaction
     build:

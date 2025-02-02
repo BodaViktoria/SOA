@@ -1,4 +1,4 @@
-package com.ubbcluj.authentication.dto;
+package com.ubbcluj.restaurant.dtos;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

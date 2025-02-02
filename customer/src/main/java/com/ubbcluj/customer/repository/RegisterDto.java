@@ -1,4 +1,4 @@
-package com.ubbcluj.restaurant.dtos;
+package com.ubbcluj.customer.repository;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
