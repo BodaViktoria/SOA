@@ -157,6 +157,7 @@ services:
       - ACTIVEMQ_PASSWORD=artemis
       - RESTAURANT_URL=http://restaurant:8080
       - CUSTOMER_URL=http://customer:8080
+      - TRAN_WS=ws://transaction:8080
     deploy:
       replicas: 1
     depends_on:

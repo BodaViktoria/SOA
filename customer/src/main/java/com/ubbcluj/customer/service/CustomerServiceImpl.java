@@ -106,16 +106,15 @@ public class CustomerServiceImpl implements CustomerService{
         }
         Integer customerRating = customer.get().getRating();
 
-        DiscountRequestDto discountRequestDto = new DiscountRequestDto(itemDtos.stream().map(i->i.getPrice()).toList(), customerRating);
+        DiscountRequestDto discountRequestDto =
+                new DiscountRequestDto(itemDtos.stream().map(i->i.getPrice()).toList(), customerRating);
+        HttpEntity<Object> entityLambda =
+                new HttpEntity<>(discountRequestDto, headers);
+        ResponseEntity<DiscountResponseDto> responseLambda =
+                restTemplate.exchange(lambdaUrl, HttpMethod.POST, entityLambda, DiscountResponseDto.class);
 
-        // Wrap request body and headers in HttpEntity
-        HttpEntity<Object> entityLambda = new HttpEntity<>(discountRequestDto, headers);
-
-        // Send POST request
-        ResponseEntity<DiscountResponseDto> responseLambda = restTemplate.exchange(lambdaUrl, HttpMethod.POST, entityLambda, DiscountResponseDto.class);
-
-        // Return the response body as a String
         DiscountResponseDto discountResponse = responseLambda.getBody();
+
         OrderEntity finalOrderDto = new OrderEntity(itemDtos.stream().map(i->i.getId().toString()).collect(Collectors.joining(",")), customer.get(), discountResponse.getFinal_price());
         var savedOrder = orderRepository.save(finalOrderDto);
 

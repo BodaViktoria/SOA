@@ -17,6 +17,9 @@ public class SpringGatewayLocator {
     @Value("${customerServiceUrl}")
     protected String customerServiceUrl;
 
+    @Value("${transactionServiceWS}")
+    protected String transactionServiceWS;
+
     public SpringGatewayLocator(AuthorizationFilter authorizationFilter) {
         this.authorizationFilter = authorizationFilter;
     }
@@ -91,6 +94,9 @@ public class SpringGatewayLocator {
                                         )
                                         .filters(f -> f.filter(authorizationFilter))
                                         .uri(customerServiceUrl))
+                .route(
+                        p ->
+                                p.path("/transaction/ws/**").uri(transactionServiceWS))
                 .build();
     }
 }
