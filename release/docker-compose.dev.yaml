@@ -61,8 +61,8 @@ services:
       - "9092:9092"
     environment:
       KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
-      KAFKA_ZOOKEEPER_SESSION_TIMEOUT_MS: 30000
-      KAFKA_ZOOKEEPER_CONNECTION_TIMEOUT_MS: 30000
+      KAFKA_ZOOKEEPER_SESSION_TIMEOUT_MS: 300000
+      KAFKA_ZOOKEEPER_CONNECTION_TIMEOUT_MS: 300000
       KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092,PLAINTEXT_HOST://localhost:29092
       KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
       KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
@@ -100,7 +100,7 @@ services:
       - AUTH_URL=auth-service
       - AUTH_PORT=8080
     deploy:
-      replicas: 3
+      replicas: 1
     depends_on:
       - restaurant-postgres
     volumes:
@@ -131,7 +131,7 @@ services:
       - KAFKA_URL=kafka
       - KAFKA_PORT=9092
     deploy:
-      replicas: 3
+      replicas: 1
     depends_on:
       - customer-postgres
       - kafka
@@ -183,7 +183,7 @@ services:
       - KAFKA_URL=kafka
       - KAFKA_PORT=9092
     deploy:
-      replicas: 3
+      replicas: 1
     depends_on:
       - transaction-postgres
       - kafka

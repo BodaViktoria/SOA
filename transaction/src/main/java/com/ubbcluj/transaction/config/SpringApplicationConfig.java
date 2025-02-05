@@ -23,6 +23,7 @@ public class SpringApplicationConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
+        configuration.addAllowedOrigin("http://localhost:4200");
         configuration.setAllowedOrigins(List.of(""));
         configuration.setAllowedMethods(List.of(""));
         configuration.setAllowedHeaders(List.of("*"));

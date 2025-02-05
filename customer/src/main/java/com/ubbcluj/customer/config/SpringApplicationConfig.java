@@ -1,4 +1,4 @@
-package com.ubbcluj.restaurant.config;
+package com.ubbcluj.customer.config;
 
 import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.context.annotation.Bean;
@@ -14,22 +14,23 @@ import java.util.List;
 
 @Configuration
 @ComponentScan(basePackages = {
-        "com.ubbcluj.restaurant",
+        "com.ubbcluj.customer",
 })
 @EnableTransactionManagement
-@EnableJpaRepositories(basePackages = "com.ubbcluj.restaurant")
-@EntityScan(basePackages = "com.ubbcluj.restaurant")
+@EnableJpaRepositories(basePackages = "com.ubbcluj.customer")
+@EntityScan(basePackages = "com.ubbcluj.customer")
 public class SpringApplicationConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.addAllowedOrigin("http://localhost:4200");
-        configuration.setAllowedOrigins(List.of(""));
-        configuration.setAllowedMethods(List.of(""));
-        configuration.setAllowedHeaders(List.of("*"));
+        configuration.addAllowedOrigin("http://localhost:4200"); // Allow Angular app origin
+        configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS")); // Specify allowed methods
+        configuration.setAllowedHeaders(List.of("*")); // Allow all headers
+        configuration.setAllowCredentials(true); // Allow credentials (cookies, headers, etc.)
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-        source.registerCorsConfiguration("/**", configuration);
+        source.registerCorsConfiguration("/**", configuration); // Apply CORS settings globally
         return source;
     }
+
 }
