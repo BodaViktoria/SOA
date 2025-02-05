@@ -35,6 +35,13 @@ All of the above are illustrated in the following architecture diagram:
 
 ---
 
+Microfrontend Architecture
+
+The front-end of the restaurant management application is built as a microfrontend architecture using Angular. It consists of a host (shell) and two microfrontends (auth and customer) to provide a modular and scalable interface.
+
+This is illustrated in the following architecture diagram:
+
+---
 
 
 
