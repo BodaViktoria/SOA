@@ -1,49 +1,84 @@
-SOA-App
+# SOA-App
 
-Customer-Restaurant Application for Service Oriented Architecture class
+## Customer-Restaurant Application for Service Oriented Architecture Class
 
-Introduction
+### Introduction
 
-This project is a microservice-based system designed to handle various functionalities related to authentication, customer and restaurant management. The application is fully containerized using Docker, with all its components orchestrated and managed through Docker Compose.
+This project is a microservice-based system designed to handle various functionalities related to authentication, customer, and restaurant management. The application is fully containerized using Docker, with all its components orchestrated and managed through Docker Compose.
 
-The system integrates several backend services developed in Java Spring, a microfrontend architecture built with Angular and Module Federation (for more details refer to this repository), and docker swarm used for load-balancing API gateway for efficient routing. The application also contains support for serverless functions using AWS Lambda. Message-based communication between micro-services is managed through ActiveMQ, and event-streaming using Apache Kafka. The REST API is secured using JWT tokens to ensure safe authentication and authorization.
+The system integrates several backend services developed in Java Spring, a microfrontend architecture built with Angular and Module Federation (for more details, refer to this repository), and Docker Swarm for load-balancing the API gateway to ensure efficient routing. The application also includes support for serverless functions using AWS Lambda. Message-based communication between microservices is managed through ActiveMQ, and event-streaming is handled using Apache Kafka. The REST API is secured using JWT tokens to ensure safe authentication and authorization.
 
-Here is an overview of each main component of the application:
+---
 
-Backend Services
+## Architecture Overview
 
-Auth Service: Manages user authentication and token generation.
-Customer Service: Handles customer-related data and operations such as ordering products from different Restarants.
-Restaurant Service: Provides restaurant management functionalities, like creating, deleting, updating and fetching items.
-Transaction Service: Handles the transaction of the customer to the restaurant.
+### Backend Services
 
-Database Layer
+- **Auth Service:** Manages user authentication and token generation.
+- **Customer Service:** Handles customer-related data and operations such as ordering products from different restaurants.
+- **Restaurant Service:** Provides restaurant management functionalities, like creating, deleting, updating, and fetching items.
+- **Transaction Service:** Handles transactions between customers and restaurants.
+
+### Database Layer
 
 Each microservice has a dedicated PostgreSQL instance for data isolation and integrity.
 
-Message brokers and event streaming
+### Message Brokers and Event Streaming
 
-Message brokering is developed using ActiveMQ. This facilitates asynchronous communication between the Customer Service and the Restaurant Service to handle data syncronization between the orders placed by a customer to a restaurant. When a customer wants to order items from a restaurant, the Customer Service sends a message to the Restaurant Service via ActiveMQ to notify the Restaurant Service about the order that has been placed.
+- **Message Brokering:** Developed using ActiveMQ to facilitate asynchronous communication between the Customer Service and the Restaurant Service, ensuring data synchronization between customer orders and restaurant processing. When a customer places an order, the Customer Service sends a message to the Restaurant Service via ActiveMQ to notify it about the order.
 
-Event streaming is built using Apache Kafka to manage data streaming and real-time processing. In this context, Kafka is used for event-driven communication between the Customer Service and the Transaction Service. When a customer attempts to order items from a restaurant, the Customer Service emits an event about the order via Kafka, which the Transaction Service consumes to save the transaction details.
+- **Event Streaming:** Built using Apache Kafka to manage data streaming and real-time processing. Kafka enables event-driven communication between the Customer Service and the Transaction Service. When a customer places an order, the Customer Service emits an event via Kafka, which the Transaction Service consumes to store transaction details.
 
-FaaS
+### FaaS (Function as a Service)
 
-A Lambda function (get-user-discount) is used to demonstrate serverless computing. This function is built using AWS Lambda, and is responsible for calculating the customer's discount based on the customer rating and the price of the items the user wants to order. This allows the system to handle user-specific data queries without needing a full-fledged backend service. The function is deployed and managed using the Serverless Framework, for efficient deployment to AWS.
+A Lambda function (`get-user-discount`) is used to demonstrate serverless computing. This function, built using AWS Lambda, calculates the customer's discount based on their rating and the price of the items they want to order. This approach allows the system to handle user-specific queries without requiring a full-fledged backend service. The function is deployed and managed using the Serverless Framework for efficient deployment to AWS.
 
-All of the above are illustrated in the following architecture diagram:
+### System Architecture
 
----
+The following diagram illustrates the overall system architecture:
 
-Microfrontend Architecture
-
-The front-end of the restaurant management application is built as a microfrontend architecture using Angular. It consists of a host (shell) and two microfrontends (auth and customer) to provide a modular and scalable interface.
-
-This is illustrated in the following architecture diagram:
+*(Insert architecture diagram here)*
 
 ---
 
+## Microfrontend Architecture
 
+The front-end of the restaurant management application is built using a microfrontend architecture with Angular. It consists of a host (shell) and two microfrontends (auth and customer) to provide a modular and scalable interface.
 
+The microfrontend architecture is illustrated in the following diagram:
 
+*(Insert microfrontend architecture diagram here)*
 
+---
+
+## Deployment & Setup
+
+### Prerequisites
+- Docker & Docker Compose
+- Java 17 (for backend services)
+- Node.js & Angular CLI (for frontend)
+- ActiveMQ & Apache Kafka
+- AWS Lambda & Serverless Framework (for FaaS deployment)
+
+### Running the Application
+
+1. Clone the repository:
+   ```sh
+   git clone https://github.com/your-repo/SOA-App.git
+   cd SOA-App
+   ```
+
+2. Start the microservices and dependencies using Docker Compose:
+   ```sh
+   docker-compose up --build
+   ```
+
+3. Access the frontend at:
+   ```sh
+   http://localhost:4200
+   ```
+
+4. API Gateway runs at:
+   ```sh
+   http://localhost:8080
+   ```
