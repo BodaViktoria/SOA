@@ -37,7 +37,7 @@ A Lambda function (`get-user-discount`) is used to demonstrate serverless comput
 
 The following diagram illustrates the overall system architecture:
 
-<img width="808" alt="image" src="https://github.com/user-attachments/assets/6ba3e509-435f-40e4-bbd9-94594c26c9c4" />
+<img width="808" alt="image" src="https://github.com/user-attachments/assets/126e853c-855c-45a4-bc1e-7a8d19401f16" />
 
 ---
 
