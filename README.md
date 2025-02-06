@@ -2,8 +2,6 @@
 
 ## Customer-Restaurant Application for Service Oriented Architecture Class
 
-### Introduction
-
 This project is a microservice-based system designed to handle various functionalities related to authentication, customer, and restaurant management. The application is fully containerized using Docker, with all its components orchestrated and managed through Docker Compose.
 
 The system integrates several backend services developed in Java Spring, a microfrontend architecture built with Angular and Module Federation (for more details, refer to this repository), and Docker Swarm for load-balancing the API gateway to ensure efficient routing. The application also includes support for serverless functions using AWS Lambda. Message-based communication between microservices is managed through ActiveMQ, and event-streaming is handled using Apache Kafka. The REST API is secured using JWT tokens to ensure safe authentication and authorization.
