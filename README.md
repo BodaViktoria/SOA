@@ -47,7 +47,8 @@ The front-end of the restaurant management application is built using a microfro
 
 The microfrontend architecture is illustrated in the following diagram:
 
-*(Insert microfrontend architecture diagram here)*
+<img width="586" alt="image" src="https://github.com/user-attachments/assets/8fa90e4b-9cc0-4a2c-a46b-0293f444038b" />
+
 
 ---
 
