@@ -81,5 +81,5 @@ The microfrontend architecture is illustrated in the following diagram:
 
 4. API Gateway runs at:
    ```sh
-   http://localhost:8080
+   http://localhost:8030
    ```
