@@ -47,17 +47,17 @@ The microfrontend architecture is illustrated in the following diagram:
 
 <img width="586" alt="image" src="https://github.com/user-attachments/assets/8fa90e4b-9cc0-4a2c-a46b-0293f444038b" />
 
-### In more detail about the microservices
-## Authentication
+## In more detail about the microservices
+### Authentication
 ![authentication-diagram](https://github.com/user-attachments/assets/7cf9dddd-4602-43cf-8117-af688862ec68)
 
-## Customer
+### Customer
 ![customer-diagram](https://github.com/user-attachments/assets/b292e1df-0c89-4527-a2f3-22d80bf97caa)
 
-## Restuarant
+### Restuarant
 ![restaurant-diagram](https://github.com/user-attachments/assets/3417da85-9cce-441c-a0d0-8fe0a1d298ef)
 
-## Transaction
+### Transaction
 ![transaction-diagram](https://github.com/user-attachments/assets/b0c2522e-0b3a-41a0-af68-5e1bc019c35d)
 
 ---
