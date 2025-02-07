@@ -49,23 +49,47 @@ The microfrontend architecture is illustrated in the following diagram:
 
 ## In more detail about the microservices
 ### Authentication
-The Authentification Microservice handles user authentication and registration. It provides REST API endpoints for user management and generates secure JWT tokens for authentication.
+The Authentication Microservice microservice handles user authentication and registration. It provides secure access management using a repository-based approach.
 
-### Key Features
-
-User registration with input validation.
-Login functionality with secure password hashing and verification.
-JWT token generation for authenticated access.
+Key Features
+User Registration: Registers new users and stores credentials securely.
+User Authentication: Validates login credentials and returns authentication tokens.
+Repository-Based User Management: Supports querying users by username and password.
+Encapsulation of User Entities: Ensures modular and maintainable user entity management.
 
 ![authentication-diagram](https://github.com/user-attachments/assets/7cf9dddd-4602-43cf-8117-af688862ec68)
 
 ### Customer
+The Customer Microservice manages customers and their orders. It allows users to register as customers and place orders.
+
+Key Features
+Customer Registration: Associates a user with a customer profile.
+Order Placement: Enables customers to create new orders.
+User-Customer Association: Links customers to their respective user accounts.
+Order Management: Facilitates order creation and tracking.
+Service Layer Abstraction: Uses a service layer to handle business logic separately from controllers.
 ![customer-diagram](https://github.com/user-attachments/assets/b292e1df-0c89-4527-a2f3-22d80bf97caa)
 
 ### Restuarant
+This microservice manages restaurants, their menus, and customer orders. It provides endpoints for handling restaurant-related operations.
+
+Key Features
+Restaurant Registration: Enables the creation and management of restaurants.
+Menu Item Management: Allows restaurants to add, update, and remove menu items.
+Order Processing: Supports placing and managing customer orders.
+Integration with Order Queue: Listens for incoming order messages and processes them accordingly.
+Repository-Based Data Access: Efficiently retrieves restaurant and item data from the database.
+
 ![restaurant-diagram](https://github.com/user-attachments/assets/3417da85-9cce-441c-a0d0-8fe0a1d298ef)
 
 ### Transaction
+This microservice handles financial transactions related to customer orders.
+
+Key Features
+Transaction Logging: Records transactions associated with customer orders.
+Repository-Based Storage: Stores and retrieves transaction data efficiently.
+Event-Driven Architecture: Listens for incoming transaction-related events via message queues.
+Customer Transaction Association: Links transactions to customers for financial tracking
 ![transaction-diagram](https://github.com/user-attachments/assets/b0c2522e-0b3a-41a0-af68-5e1bc019c35d)
 
 ---
