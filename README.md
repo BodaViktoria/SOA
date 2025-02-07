@@ -49,6 +49,14 @@ The microfrontend architecture is illustrated in the following diagram:
 
 ## In more detail about the microservices
 ### Authentication
+The Authentification Microservice handles user authentication and registration. It provides REST API endpoints for user management and generates secure JWT tokens for authentication.
+
+### Key Features
+
+User registration with input validation.
+Login functionality with secure password hashing and verification.
+JWT token generation for authenticated access.
+
 ![authentication-diagram](https://github.com/user-attachments/assets/7cf9dddd-4602-43cf-8117-af688862ec68)
 
 ### Customer
